@@ -1,0 +1,1246 @@
+---
+import { useTranslations, type Locale } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const clientTranslations = {
+  webmToMp4Desc: t('mode.webmToMp4Desc'),
+  mp4ToWebmDesc: t('mode.mp4ToWebmDesc'),
+  webmToMp3Desc: t('mode.webmToMp3Desc'),
+  webmToGifDesc: t('mode.webmToGifDesc'),
+  webmToMovDesc: t('mode.webmToMovDesc'),
+  compressWebmDesc: t('mode.compressWebmDesc'),
+  dropzoneTitleWebm: t('dropzone.title'),
+  dropzoneTitleMp4: t('dropzone.titleMp4'),
+  selectBtnWebm: t('dropzone.selectBtn'),
+  selectBtnMp4: t('dropzone.selectBtnMp4'),
+  sampleBtn: t('dropzone.sampleBtn'),
+  generatingSample: t('dropzone.generatingSample'),
+  startBtnMp4: t('settings.startBtn'),
+  startBtnGeneric: t('settings.startBtnGeneric'),
+  loadingEngine: t('progress.loadingEngine'),
+  transcoding: t('progress.transcoding'),
+  remuxing: t('progress.remuxing'),
+  downloadMp4: t('result.downloadMp4'),
+  downloadGeneric: t('result.downloadGeneric'),
+};
+---
+
+<div
+  id="converter-workspace-box"
+  data-i18n={JSON.stringify(clientTranslations)}
+  class="w-full max-w-5xl mx-auto rounded-[2rem] bg-theme-workspace p-4 sm:p-6 md:p-8 shadow-workspace transition-all duration-300"
+>
+  <!-- Mode Selector Pills -->
+  <div
+    role="tablist"
+    aria-label="Conversion Format Modes"
+    class="no-scrollbar flex items-center gap-2 overflow-x-auto pb-3 mb-4 border-b border-theme-border/30"
+  >
+    <button
+      type="button"
+      role="tab"
+      aria-selected="true"
+      aria-label={t('mode.webmToMp4')}
+      data-mode="webm-to-mp4"
+      class="mode-pill shrink-0 flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm sm:text-base font-extrabold transition-all bg-[#2A835F] text-white shadow-sm"
+    >
+      <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+      </svg>
+      <span>{t('mode.webmToMp4')}</span>
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      aria-selected="false"
+      aria-label={t('mode.mp4ToWebm')}
+      data-mode="mp4-to-webm"
+      class="mode-pill shrink-0 flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm sm:text-base font-bold transition-all bg-theme-pill text-theme-text hover:border-[#2A835F] border border-transparent"
+    >
+      <span>{t('mode.mp4ToWebm')}</span>
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      aria-selected="false"
+      aria-label={t('mode.webmToMp3')}
+      data-mode="webm-to-mp3"
+      class="mode-pill shrink-0 flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm sm:text-base font-bold transition-all bg-theme-pill text-theme-text hover:border-[#2A835F] border border-transparent"
+    >
+      <span>{t('mode.webmToMp3')}</span>
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      aria-selected="false"
+      aria-label={t('mode.webmToGif')}
+      data-mode="webm-to-gif"
+      class="mode-pill shrink-0 flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm sm:text-base font-bold transition-all bg-theme-pill text-theme-text hover:border-[#2A835F] border border-transparent"
+    >
+      <span>{t('mode.webmToGif')}</span>
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      aria-selected="false"
+      aria-label={t('mode.webmToMov')}
+      data-mode="webm-to-mov"
+      class="mode-pill shrink-0 flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm sm:text-base font-bold transition-all bg-theme-pill text-theme-text hover:border-[#2A835F] border border-transparent"
+    >
+      <span>{t('mode.webmToMov')}</span>
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      aria-selected="false"
+      aria-label={t('mode.compressWebm')}
+      data-mode="compress-webm"
+      class="mode-pill shrink-0 flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm sm:text-base font-bold transition-all bg-theme-pill text-theme-text hover:border-[#2A835F] border border-transparent"
+    >
+      <span>{t('mode.compressWebm')}</span>
+    </button>
+  </div>
+
+  <!-- Dynamic Mode Subtitle -->
+  <p
+    id="mode-description-text"
+    aria-live="polite"
+    class="text-sm sm:text-base text-theme-textSecondary font-medium mb-4 text-center px-2"
+  >
+    {t('mode.webmToMp4Desc')}
+  </p>
+
+  <!-- Hidden File Input (supports batch multiple files) -->
+  <input
+    type="file"
+    id="video-file-input"
+    aria-label={t('dropzone.selectBtn')}
+    accept="video/webm,video/mp4,video/x-matroska,video/*,.webm,.mp4,.mkv,.mov"
+    multiple
+    class="hidden"
+  />
+
+  <!-- ========================================================= -->
+  <!-- STEP 1: GIANT DASHED DROPZONE                             -->
+  <!-- ========================================================= -->
+  <div id="step-1-dropzone" class="step-transition">
+    <div
+      id="dropzone-area"
+      role="button"
+      tabindex="0"
+      aria-label={t('dropzone.title')}
+      class="dropzone-container relative flex flex-col items-center justify-center rounded-3xl px-4 py-8 sm:py-11 text-center cursor-pointer select-none"
+    >
+      <!-- Oversized 60px Floating Icon -->
+      <div
+        class="floating-icon mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#2A835F]/15 text-[#2A835F] dark:bg-[#092328]/80 dark:text-[#8BBB92] shadow-inner"
+      >
+        <svg
+          class="h-14 w-14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+          <path d="M12 12v9"></path>
+          <path d="m16 16-4-4-4 4"></path>
+        </svg>
+      </div>
+
+      <h2
+        id="dropzone-heading"
+        class="text-xl sm:text-2xl md:text-3xl font-extrabold text-theme-text mb-2"
+      >
+        {t('dropzone.title')}
+      </h2>
+
+      <p class="text-sm sm:text-base text-theme-textSecondary mb-6 max-w-xl">
+        {t('dropzone.subtitle')}
+      </p>
+
+      <!-- Main Action Buttons Row -->
+      <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 w-full max-w-xl">
+        <button
+          type="button"
+          id="select-video-btn"
+          aria-label={t('dropzone.selectBtn')}
+          class="flex items-center justify-center gap-3 rounded-2xl bg-[#2A835F] hover:bg-[#12544F] text-white font-extrabold text-lg sm:text-xl px-7 py-4 shadow-emeraldGlow transition-all duration-200 hover:scale-[1.02] active:scale-[0.99]"
+        >
+          <svg class="h-6 w-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <polygon points="10 11 16 14.5 10 18 10 11" fill="currentColor"></polygon>
+          </svg>
+          <span id="select-video-btn-label">{t('dropzone.selectBtn')}</span>
+        </button>
+
+        <button
+          type="button"
+          id="sample-webm-btn"
+          aria-label={t('dropzone.sampleBtn')}
+          class="flex items-center justify-center gap-2 rounded-2xl border-2 border-[#8BBB92] bg-theme-surface hover:bg-theme-pill text-theme-text font-bold text-base sm:text-lg px-5 py-4 transition-all duration-200 hover:border-[#2A835F]"
+        >
+          <svg class="h-5 w-5 shrink-0 text-[#2A835F] dark:text-[#8BBB92]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span id="sample-webm-btn-label">{t('dropzone.sampleBtn')}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- STEP 2: SMART SETTINGS & QUEUE                            -->
+  <!-- ========================================================= -->
+  <div id="step-2-settings" class="hidden step-transition space-y-5" aria-live="polite">
+    <!-- Selected Files Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-theme-pill p-4 border border-theme-border/50">
+      <div class="flex items-center gap-3">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2A835F] text-white font-extrabold" id="queue-count-badge">
+          1
+        </span>
+        <div>
+          <p class="text-sm font-bold text-theme-text" id="queue-primary-filename">video.webm</p>
+          <p class="text-xs font-semibold text-theme-textSecondary" id="queue-total-size">0 MB</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          id="add-more-files-btn"
+          aria-label={t('dropzone.addMore')}
+          class="rounded-xl border border-theme-border bg-theme-surface px-3.5 py-2 text-xs sm:text-sm font-bold text-theme-text hover:border-[#2A835F] transition"
+        >
+          {t('dropzone.addMore')}
+        </button>
+        <button
+          type="button"
+          id="clear-queue-btn"
+          aria-label={t('dropzone.clearAll')}
+          class="rounded-xl border border-theme-border/60 bg-theme-surface px-3.5 py-2 text-xs sm:text-sm font-bold text-theme-textSecondary hover:text-red-600 transition"
+        >
+          {t('dropzone.clearAll')}
+        </button>
+      </div>
+    </div>
+
+    <!-- Big Clear Toggle Cards: (1) Universal MP4 vs (2) Fast Stream Copy / Custom Quality -->
+    <div>
+      <h3 class="text-base sm:text-lg font-extrabold text-theme-text mb-3">
+        {t('settings.title')}
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        <!-- Card 1: Universal MP4 (H.264/AAC) -->
+        <label
+          id="card-universal"
+          class="relative flex cursor-pointer flex-col justify-between rounded-2xl border-2 border-[#2A835F] bg-theme-surface p-4 shadow-sm transition-all"
+        >
+          <input
+            type="radio"
+            name="engineMode"
+            value="universal"
+            aria-label={t('settings.universalTitle')}
+            checked
+            class="sr-only"
+          />
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-[#2A835F] px-2.5 py-0.5 text-xs font-extrabold uppercase tracking-wider text-white">
+                {t('settings.universalBadge')}
+              </span>
+              <span id="radio-dot-universal" class="h-5 w-5 rounded-full border-4 border-[#2A835F] bg-white"></span>
+            </div>
+            <p class="text-base font-extrabold text-theme-text leading-snug mb-1">
+              {t('settings.universalTitle')}
+            </p>
+            <p class="text-xs sm:text-sm text-theme-textSecondary leading-relaxed">
+              {t('settings.universalDesc')}
+            </p>
+          </div>
+        </label>
+
+        <!-- Card 2: Fast Stream Copy / Custom Quality -->
+        <label
+          id="card-streamcopy"
+          class="relative flex cursor-pointer flex-col justify-between rounded-2xl border-2 border-theme-border/50 bg-theme-surface p-4 transition-all hover:border-[#2A835F]"
+        >
+          <input
+            type="radio"
+            name="engineMode"
+            value="streamcopy"
+            aria-label={t('settings.streamCopyTitle')}
+            class="sr-only"
+          />
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-theme-pill px-2.5 py-0.5 text-xs font-extrabold uppercase tracking-wider text-theme-text">
+                {t('settings.streamCopyBadge')}
+              </span>
+              <span id="radio-dot-streamcopy" class="h-5 w-5 rounded-full border-2 border-theme-border bg-transparent"></span>
+            </div>
+            <p class="text-base font-extrabold text-theme-text leading-snug mb-1">
+              {t('settings.streamCopyTitle')}
+            </p>
+            <p class="text-xs sm:text-sm text-theme-textSecondary leading-relaxed">
+              {t('settings.streamCopyDesc')}
+            </p>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Optional Video Resolution, Quality Preset & Trim Controls -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 rounded-2xl bg-theme-bg/70 p-4 border border-theme-border/40">
+      <div>
+        <label for="setting-resolution" class="block text-xs font-extrabold uppercase tracking-wider text-theme-textSecondary mb-1">
+          {t('settings.resolutionLabel')}
+        </label>
+        <select
+          id="setting-resolution"
+          aria-label={t('settings.resolutionLabel')}
+          class="w-full rounded-xl border border-theme-border bg-theme-surface px-3 py-2.5 text-sm font-bold text-theme-text focus:outline-none focus:ring-2 focus:ring-[#2A835F]"
+        >
+          <option value="original">{t('settings.resOriginal')}</option>
+          <option value="1080">{t('settings.res1080p')}</option>
+          <option value="720">{t('settings.res720p')}</option>
+          <option value="480">{t('settings.res480p')}</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="setting-crf" class="block text-xs font-extrabold uppercase tracking-wider text-theme-textSecondary mb-1">
+          {t('settings.qualityLabel')}
+        </label>
+        <select
+          id="setting-crf"
+          aria-label={t('settings.qualityLabel')}
+          class="w-full rounded-xl border border-theme-border bg-theme-surface px-3 py-2.5 text-sm font-bold text-theme-text focus:outline-none focus:ring-2 focus:ring-[#2A835F]"
+        >
+          <option value="20">{t('settings.qualityHigh')}</option>
+          <option value="23" selected>{t('settings.qualityBalanced')}</option>
+          <option value="28">{t('settings.qualityCompact')}</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="setting-trim-start" class="block text-xs font-extrabold uppercase tracking-wider text-theme-textSecondary mb-1">
+          {t('settings.trimStartLabel')}
+        </label>
+        <input
+          type="number"
+          id="setting-trim-start"
+          aria-label={t('settings.trimStartLabel')}
+          min="0"
+          step="0.5"
+          value="0"
+          class="w-full rounded-xl border border-theme-border bg-theme-surface px-3 py-2.5 text-sm font-bold text-theme-text focus:outline-none focus:ring-2 focus:ring-[#2A835F]"
+        />
+      </div>
+
+      <div>
+        <label for="setting-trim-end" class="block text-xs font-extrabold uppercase tracking-wider text-theme-textSecondary mb-1">
+          {t('settings.trimEndLabel')}
+        </label>
+        <input
+          type="number"
+          id="setting-trim-end"
+          aria-label={t('settings.trimEndLabel')}
+          min="0"
+          step="0.5"
+          value="0"
+          class="w-full rounded-xl border border-theme-border bg-theme-surface px-3 py-2.5 text-sm font-bold text-theme-text focus:outline-none focus:ring-2 focus:ring-[#2A835F]"
+        />
+      </div>
+    </div>
+
+    <!-- Massive Start Conversion Button -->
+    <button
+      type="button"
+      id="start-conversion-btn"
+      aria-label={t('settings.startBtn')}
+      class="w-full flex items-center justify-center gap-3 rounded-2xl bg-[#2A835F] hover:bg-[#12544F] text-white font-extrabold text-xl py-4 px-8 shadow-emeraldGlow transition-all duration-200 hover:scale-[1.01]"
+    >
+      <svg class="h-7 w-7 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+      </svg>
+      <span id="start-conversion-btn-label">{t('settings.startBtn')}</span>
+    </button>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- STEP 3: ANIMATED PROGRESS BAR & LOCAL RAM BADGE           -->
+  <!-- ========================================================= -->
+  <div
+    id="step-3-progress"
+    role="status"
+    aria-live="polite"
+    class="hidden step-transition py-6 px-2 sm:px-6 text-center space-y-5"
+  >
+    <!-- Privacy RAM Badge -->
+    <div class="inline-flex items-center gap-2 rounded-full bg-theme-pill border border-theme-border px-4 py-1.5 text-xs sm:text-sm font-extrabold text-theme-text shadow-sm">
+      <span class="h-2.5 w-2.5 rounded-full bg-[#2A835F] animate-ping"></span>
+      <span>{t('progress.privacyBadge')}</span>
+    </div>
+
+    <div class="space-y-1">
+      <h3 id="progress-status-heading" class="text-xl sm:text-2xl font-extrabold text-theme-text">
+        {t('progress.title')}
+      </h3>
+      <p id="progress-substatus" class="text-sm sm:text-base font-semibold text-theme-textSecondary">
+        {t('progress.loadingEngine')}
+      </p>
+    </div>
+
+    <!-- Percentage + Elapsed Timer Row -->
+    <div class="flex items-center justify-between max-w-2xl mx-auto text-base sm:text-lg font-extrabold text-theme-text">
+      <span id="progress-percentage-text" class="text-2xl sm:text-3xl text-[#2A835F] dark:text-[#8BBB92] font-mono">
+        0%
+      </span>
+      <span class="text-sm sm:text-base font-mono text-theme-textSecondary">
+        {t('progress.elapsed')}: <strong id="progress-timer-text" class="text-theme-text">0.0s</strong>
+      </span>
+    </div>
+
+    <!-- Smooth Animated Progress Bar (#2A835F to #8BBB92 gradient) -->
+    <div
+      id="progress-bar-track"
+      role="progressbar"
+      aria-label={t('progress.title')}
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="4"
+      class="w-full max-w-2xl mx-auto h-6 rounded-full bg-theme-bg border border-theme-border overflow-hidden p-1 shadow-inner"
+    >
+      <div
+        id="progress-bar-indicator"
+        class="progress-bar-fill h-full rounded-full"
+        style="width: 4%"
+      ></div>
+    </div>
+
+    <!-- Live FFmpeg Log Line -->
+    <p id="progress-log-line" class="font-mono text-xs text-theme-textSecondary truncate max-w-xl mx-auto opacity-80">
+      wasm-simd128 ready • memory Sandbox initialized
+    </p>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- STEP 4: INSTANT HTML5 PREVIEW & DOWNLOAD                  -->
+  <!-- ========================================================= -->
+  <div
+    id="step-4-result"
+    role="region"
+    aria-live="polite"
+    aria-label={t('result.title')}
+    class="hidden step-transition space-y-5"
+  >
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-theme-border/40 pb-3">
+      <div class="flex items-center gap-2.5">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2A835F] text-white">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-lg sm:text-xl font-extrabold text-theme-text">
+            {t('result.title')}
+          </h3>
+          <p class="text-xs font-bold text-[#2A835F] dark:text-[#8BBB92]">
+            {t('result.previewBadge')}
+          </p>
+        </div>
+      </div>
+
+      <!-- Conversion Stats Pills -->
+      <div class="flex flex-wrap items-center gap-2 text-xs font-bold">
+        <span class="rounded-lg bg-theme-pill px-2.5 py-1 text-theme-text">
+          {t('result.originalSize')}: <strong id="stat-orig-size">-</strong>
+        </span>
+        <span class="rounded-lg bg-theme-pill px-2.5 py-1 text-theme-text">
+          {t('result.outputSize')}: <strong id="stat-out-size">-</strong>
+        </span>
+        <span class="rounded-lg bg-theme-pill px-2.5 py-1 text-theme-text">
+          {t('result.duration')}: <strong id="stat-time-taken">-</strong>
+        </span>
+      </div>
+    </div>
+
+    <!-- Instant HTML5 Playback Preview Container -->
+    <div class="relative overflow-hidden rounded-2xl border-2 border-theme-border bg-[#092328] shadow-lg">
+      <video
+        id="result-video-preview"
+        aria-label={t('result.previewBadge')}
+        controls
+        playsinline
+        class="w-full max-h-[340px] object-contain mx-auto"
+      ></video>
+      <audio
+        id="result-audio-preview"
+        aria-label={t('result.previewBadge')}
+        controls
+        class="hidden w-full p-6"
+      ></audio>
+      <img
+        id="result-gif-preview"
+        alt="Converted Animated GIF Preview"
+        class="hidden max-h-[340px] object-contain mx-auto p-2"
+      />
+    </div>
+
+    <!-- Batch Converted Files List (shown when >1 files converted) -->
+    <div id="batch-results-list" class="hidden space-y-2 rounded-2xl bg-theme-pill p-3.5 border border-theme-border/50"></div>
+
+    <!-- Primary Download & Reset Triggers -->
+    <div class="flex flex-col sm:flex-row items-center gap-3.5 pt-1">
+      <a
+        id="download-primary-btn"
+        href="#"
+        download="converted.mp4"
+        aria-label={t('result.downloadMp4')}
+        class="w-full sm:flex-1 flex items-center justify-center gap-3 rounded-2xl bg-[#2A835F] hover:bg-[#12544F] text-white font-extrabold text-lg sm:text-xl py-4 px-8 shadow-emeraldGlow transition-all duration-200 hover:scale-[1.01] text-center"
+      >
+        <svg class="h-6 w-6 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span id="download-primary-label">{t('result.downloadMp4')}</span>
+      </a>
+
+      <button
+        type="button"
+        id="convert-another-btn"
+        aria-label={t('result.convertAnother')}
+        class="w-full sm:w-auto flex items-center justify-center gap-2 rounded-2xl border-2 border-theme-border bg-theme-surface hover:bg-theme-pill text-theme-text font-extrabold text-base sm:text-lg py-4 px-6 transition-all"
+      >
+        <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" aria-hidden="true">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+          <path d="M3 3v5h5"></path>
+        </svg>
+        <span>{t('result.convertAnother')}</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import type { FFmpeg } from '@ffmpeg/ffmpeg';
+
+  type ConversionMode =
+    | 'webm-to-mp4'
+    | 'mp4-to-webm'
+    | 'webm-to-mp3'
+    | 'webm-to-gif'
+    | 'webm-to-mov'
+    | 'compress-webm';
+
+  interface ConvertedOutput {
+    name: string;
+    url: string;
+    size: number;
+    originalSize: number;
+    mime: string;
+  }
+
+  const boxEl = document.getElementById('converter-workspace-box');
+  const i18n = boxEl ? JSON.parse(boxEl.getAttribute('data-i18n') || '{}') : {};
+
+  let currentMode: ConversionMode = 'webm-to-mp4';
+  let fileQueue: File[] = [];
+  let convertedOutputs: ConvertedOutput[] = [];
+  let ffmpegInstance: FFmpeg | null = null;
+  let timerInterval: number | null = null;
+  let startTimeMs = 0;
+
+  // DOM References
+  const modePills = document.querySelectorAll<HTMLButtonElement>('.mode-pill');
+  const modeDescText = document.getElementById('mode-description-text');
+  const fileInput = document.getElementById('video-file-input') as HTMLInputElement | null;
+
+  const step1 = document.getElementById('step-1-dropzone');
+  const step2 = document.getElementById('step-2-settings');
+  const step3 = document.getElementById('step-3-progress');
+  const step4 = document.getElementById('step-4-result');
+
+  const dropzoneArea = document.getElementById('dropzone-area');
+  const dropzoneHeading = document.getElementById('dropzone-heading');
+  const selectVideoBtn = document.getElementById('select-video-btn');
+  const selectVideoBtnLabel = document.getElementById('select-video-btn-label');
+  const sampleWebmBtn = document.getElementById('sample-webm-btn');
+  const sampleWebmBtnLabel = document.getElementById('sample-webm-btn-label');
+
+  const queueCountBadge = document.getElementById('queue-count-badge');
+  const queuePrimaryFilename = document.getElementById('queue-primary-filename');
+  const queueTotalSize = document.getElementById('queue-total-size');
+  const addMoreFilesBtn = document.getElementById('add-more-files-btn');
+  const clearQueueBtn = document.getElementById('clear-queue-btn');
+
+  const cardUniversal = document.getElementById('card-universal');
+  const cardStreamCopy = document.getElementById('card-streamcopy');
+  const radioDotUniversal = document.getElementById('radio-dot-universal');
+  const radioDotStreamCopy = document.getElementById('radio-dot-streamcopy');
+  const startConversionBtn = document.getElementById('start-conversion-btn');
+  const startConversionBtnLabel = document.getElementById('start-conversion-btn-label');
+
+  const progressSubstatus = document.getElementById('progress-substatus');
+  const progressPercentageText = document.getElementById('progress-percentage-text');
+  const progressTimerText = document.getElementById('progress-timer-text');
+  const progressBarTrack = document.getElementById('progress-bar-track');
+  const progressBarIndicator = document.getElementById('progress-bar-indicator');
+  const progressLogLine = document.getElementById('progress-log-line');
+
+  const statOrigSize = document.getElementById('stat-orig-size');
+  const statOutSize = document.getElementById('stat-out-size');
+  const statTimeTaken = document.getElementById('stat-time-taken');
+  const videoPreview = document.getElementById('result-video-preview') as HTMLVideoElement | null;
+  const audioPreview = document.getElementById('result-audio-preview') as HTMLAudioElement | null;
+  const gifPreview = document.getElementById('result-gif-preview') as HTMLImageElement | null;
+  const batchResultsList = document.getElementById('batch-results-list');
+  const downloadPrimaryBtn = document.getElementById('download-primary-btn') as HTMLAnchorElement | null;
+  const downloadPrimaryLabel = document.getElementById('download-primary-label');
+  const convertAnotherBtn = document.getElementById('convert-another-btn');
+
+  function formatBytes(bytes: number): string {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${(bytes / Math.pow(k, i)).toFixed(i > 1 ? 2 : 1)} ${sizes[i]}`;
+  }
+
+  function setProgressUI(percent: number) {
+    if (progressPercentageText) progressPercentageText.textContent = `${percent}%`;
+    if (progressBarIndicator) progressBarIndicator.style.width = `${percent}%`;
+    progressBarTrack?.setAttribute('aria-valuenow', String(percent));
+  }
+
+  function showStep(stepNumber: 1 | 2 | 3 | 4) {
+    step1?.classList.toggle('hidden', stepNumber !== 1);
+    step2?.classList.toggle('hidden', stepNumber !== 2);
+    step3?.classList.toggle('hidden', stepNumber !== 3);
+    step4?.classList.toggle('hidden', stepNumber !== 4);
+  }
+
+  // Mode Switching
+  modePills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      const mode = pill.getAttribute('data-mode') as ConversionMode;
+      if (!mode) return;
+      currentMode = mode;
+
+      modePills.forEach((p) => {
+        const active = p.getAttribute('data-mode') === mode;
+        p.setAttribute('aria-selected', active ? 'true' : 'false');
+        if (active) {
+          p.classList.add('bg-[#2A835F]', 'text-white', 'shadow-sm', 'font-extrabold');
+          p.classList.remove('bg-theme-pill', 'text-theme-text', 'font-bold');
+        } else {
+          p.classList.remove('bg-[#2A835F]', 'text-white', 'shadow-sm', 'font-extrabold');
+          p.classList.add('bg-theme-pill', 'text-theme-text', 'font-bold');
+        }
+      });
+
+      const descMap: Record<ConversionMode, string> = {
+        'webm-to-mp4': i18n.webmToMp4Desc,
+        'mp4-to-webm': i18n.mp4ToWebmDesc,
+        'webm-to-mp3': i18n.webmToMp3Desc,
+        'webm-to-gif': i18n.webmToGifDesc,
+        'webm-to-mov': i18n.webmToMovDesc,
+        'compress-webm': i18n.compressWebmDesc,
+      };
+      if (modeDescText && descMap[mode]) {
+        modeDescText.textContent = descMap[mode];
+      }
+
+      const isMp4Source = mode === 'mp4-to-webm';
+      if (dropzoneHeading) {
+        dropzoneHeading.textContent = isMp4Source ? i18n.dropzoneTitleMp4 : i18n.dropzoneTitleWebm;
+      }
+      if (selectVideoBtnLabel) {
+        selectVideoBtnLabel.textContent = isMp4Source ? i18n.selectBtnMp4 : i18n.selectBtnWebm;
+      }
+      if (startConversionBtnLabel) {
+        startConversionBtnLabel.textContent =
+          mode === 'webm-to-mp4' ? i18n.startBtnMp4 : i18n.startBtnGeneric;
+      }
+    });
+  });
+
+  // Engine Mode Radio Cards Visual Sync
+  const engineRadios = document.querySelectorAll<HTMLInputElement>('input[name="engineMode"]');
+  engineRadios.forEach((radio) => {
+    radio.addEventListener('change', () => {
+      const isUniversal = radio.value === 'universal' && radio.checked;
+      if (isUniversal) {
+        cardUniversal?.classList.add('border-[#2A835F]', 'shadow-sm');
+        cardUniversal?.classList.remove('border-theme-border/50');
+        cardStreamCopy?.classList.remove('border-[#2A835F]', 'shadow-sm');
+        cardStreamCopy?.classList.add('border-theme-border/50');
+        radioDotUniversal?.classList.add('border-4', 'border-[#2A835F]', 'bg-white');
+        radioDotUniversal?.classList.remove('border-2', 'border-theme-border', 'bg-transparent');
+        radioDotStreamCopy?.classList.remove('border-4', 'border-[#2A835F]', 'bg-white');
+        radioDotStreamCopy?.classList.add('border-2', 'border-theme-border', 'bg-transparent');
+      } else {
+        cardStreamCopy?.classList.add('border-[#2A835F]', 'shadow-sm');
+        cardStreamCopy?.classList.remove('border-theme-border/50');
+        cardUniversal?.classList.remove('border-[#2A835F]', 'shadow-sm');
+        cardUniversal?.classList.add('border-theme-border/50');
+        radioDotStreamCopy?.classList.add('border-4', 'border-[#2A835F]', 'bg-white');
+        radioDotStreamCopy?.classList.remove('border-2', 'border-theme-border', 'bg-transparent');
+        radioDotUniversal?.classList.remove('border-4', 'border-[#2A835F]', 'bg-white');
+        radioDotUniversal?.classList.add('border-2', 'border-theme-border', 'bg-transparent');
+      }
+    });
+  });
+
+  function handleFilesAdded(files: FileList | File[]) {
+    const arr = Array.from(files);
+    if (arr.length === 0) return;
+    fileQueue = [...fileQueue, ...arr];
+    updateQueueUI();
+    showStep(2);
+  }
+
+  function updateQueueUI() {
+    if (fileQueue.length === 0) {
+      showStep(1);
+      return;
+    }
+    if (queueCountBadge) queueCountBadge.textContent = String(fileQueue.length);
+    if (queuePrimaryFilename) {
+      queuePrimaryFilename.textContent =
+        fileQueue.length === 1
+          ? fileQueue[0].name
+          : `${fileQueue[0].name} (+${fileQueue.length - 1} more)`;
+    }
+    const totalBytes = fileQueue.reduce((acc, f) => acc + f.size, 0);
+    if (queueTotalSize) queueTotalSize.textContent = formatBytes(totalBytes);
+  }
+
+  // Dropzone & File Input Listeners
+  selectVideoBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileInput?.click();
+  });
+
+  dropzoneArea?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('#sample-webm-btn')) return;
+    fileInput?.click();
+  });
+
+  dropzoneArea?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      fileInput?.click();
+    }
+  });
+
+  fileInput?.addEventListener('change', () => {
+    if (fileInput.files && fileInput.files.length > 0) {
+      handleFilesAdded(fileInput.files);
+      fileInput.value = '';
+    }
+  });
+
+  addMoreFilesBtn?.addEventListener('click', () => fileInput?.click());
+
+  clearQueueBtn?.addEventListener('click', () => {
+    fileQueue = [];
+    showStep(1);
+  });
+
+  // Drag and Drop Events
+  ['dragenter', 'dragover'].forEach((evt) => {
+    dropzoneArea?.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzoneArea.classList.add('drag-active');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach((evt) => {
+    dropzoneArea?.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzoneArea.classList.remove('drag-active');
+    });
+  });
+
+  dropzoneArea?.addEventListener('drop', (e) => {
+    const dt = (e as DragEvent).dataTransfer;
+    if (dt?.files && dt.files.length > 0) {
+      handleFilesAdded(dt.files);
+    }
+  });
+
+  // Instant Sample WebM File Generator (100% Client-Side Canvas + Audio Synthesis)
+  sampleWebmBtn?.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (!sampleWebmBtnLabel) return;
+    const origText = sampleWebmBtnLabel.textContent;
+    sampleWebmBtnLabel.textContent = i18n.generatingSample || 'Generating Sample WebM...';
+    (sampleWebmBtn as HTMLButtonElement).disabled = true;
+
+    try {
+      const sampleFile = await synthesizeSampleWebmVideo();
+      fileQueue = [sampleFile];
+      updateQueueUI();
+      showStep(2);
+    } catch (err) {
+      console.error('Sample generation error:', err);
+    } finally {
+      sampleWebmBtnLabel.textContent = origText;
+      (sampleWebmBtn as HTMLButtonElement).disabled = false;
+    }
+  });
+
+  async function synthesizeSampleWebmVideo(): Promise<File> {
+    const canvas = document.createElement('canvas');
+    canvas.width = 640;
+    canvas.height = 360;
+    const ctx = canvas.getContext('2d')!;
+
+    const stream = canvas.captureStream(30);
+
+    let audioCtx: AudioContext | null = null;
+    try {
+      audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      const dest = audioCtx.createMediaStreamDestination();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(587.33, audioCtx.currentTime + 1.1);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.15);
+      osc.connect(gain);
+      gain.connect(dest);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 1.2);
+      const audioTrack = dest.stream.getAudioTracks()[0];
+      if (audioTrack) stream.addTrack(audioTrack);
+    } catch {}
+
+    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+      ? 'video/webm;codecs=vp9'
+      : MediaRecorder.isTypeSupported('video/webm;codecs=vp8')
+      ? 'video/webm;codecs=vp8'
+      : 'video/webm';
+
+    const recorder = new MediaRecorder(stream, {
+      mimeType,
+      videoBitsPerSecond: 1800000,
+    });
+
+    const chunks: BlobPart[] = [];
+    recorder.ondataavailable = (ev) => {
+      if (ev.data && ev.data.size > 0) chunks.push(ev.data);
+    };
+
+    const finished = new Promise<File>((resolve) => {
+      recorder.onstop = () => {
+        if (audioCtx) audioCtx.close().catch(() => {});
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        resolve(new File([blob], 'sample-emerald-demo.webm', { type: 'video/webm' }));
+      };
+    });
+
+    recorder.start(100);
+
+    const totalFrames = 36;
+    for (let frame = 0; frame < totalFrames; frame++) {
+      const progress = frame / totalFrames;
+      const grad = ctx.createLinearGradient(0, 0, 640, 360);
+      grad.addColorStop(0, '#092328');
+      grad.addColorStop(0.5, '#12544F');
+      grad.addColorStop(1, '#2A835F');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 640, 360);
+
+      const cx = 140 + progress * 360;
+      const cy = 180 + Math.sin(progress * Math.PI * 2) * 45;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 48, 0, Math.PI * 2);
+      ctx.fillStyle = '#8BBB92';
+      ctx.fill();
+
+      ctx.fillStyle = '#F4F9F5';
+      ctx.font = 'bold 28px sans-serif';
+      ctx.fillText('WebMtoMP4.github.io', 180, 90);
+      ctx.font = 'bold 18px monospace';
+      ctx.fillStyle = '#8BBB92';
+      ctx.fillText(`60FPS SAMPLE WEBM • FRAME ${frame + 1}/${totalFrames}`, 155, 315);
+
+      await new Promise((r) => setTimeout(r, 32));
+    }
+
+    recorder.stop();
+    return finished;
+  }
+
+  // Lazy-Loaded FFmpeg Engine (Local /ffmpeg/ first, CDN fallback)
+  async function ensureFFmpegLoaded(): Promise<{
+    ffmpeg: FFmpeg;
+    fetchFile: (file: File) => Promise<Uint8Array>;
+  }> {
+    const [{ FFmpeg }, { fetchFile, toBlobURL }] = await Promise.all([
+      import('@ffmpeg/ffmpeg'),
+      import('@ffmpeg/util'),
+    ]);
+
+    if (ffmpegInstance && ffmpegInstance.loaded) {
+      return { ffmpeg: ffmpegInstance, fetchFile };
+    }
+
+    const ffmpeg = new FFmpeg();
+
+    ffmpeg.on('log', ({ message }) => {
+      if (progressLogLine && message) {
+        progressLogLine.textContent = message;
+      }
+    });
+
+    ffmpeg.on('progress', ({ progress }) => {
+      const clamped = Math.max(5, Math.min(99, Math.round((progress || 0) * 100)));
+      setProgressUI(clamped);
+    });
+
+    const localBase = `${window.location.origin}/ffmpeg`;
+    try {
+      await ffmpeg.load({
+        classWorkerURL: `${localBase}/worker.js`,
+        coreURL: `${localBase}/ffmpeg-core.js`,
+        wasmURL: `${localBase}/ffmpeg-core.wasm`,
+      });
+    } catch {
+      const cdnBase = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
+      await ffmpeg.load({
+        coreURL: await toBlobURL(`${cdnBase}/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${cdnBase}/ffmpeg-core.wasm`, 'application/wasm'),
+      });
+    }
+
+    ffmpegInstance = ffmpeg;
+    return { ffmpeg, fetchFile };
+  }
+
+  function startElapsedTimer() {
+    startTimeMs = performance.now();
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = window.setInterval(() => {
+      const elapsedSec = ((performance.now() - startTimeMs) / 1000).toFixed(1);
+      if (progressTimerText) progressTimerText.textContent = `${elapsedSec}s`;
+    }, 100);
+  }
+
+  function stopElapsedTimer(): string {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    return `${((performance.now() - startTimeMs) / 1000).toFixed(2)}s`;
+  }
+
+  function buildFFmpegArgs(
+    inputName: string,
+    outputName: string,
+    mode: ConversionMode,
+    engineChoice: 'universal' | 'streamcopy',
+    resolution: string,
+    crf: string,
+    trimStart: number,
+    trimEnd: number
+  ): string[] {
+    const args: string[] = [];
+
+    if (trimStart > 0) {
+      args.push('-ss', String(trimStart));
+    }
+    if (trimEnd > trimStart) {
+      args.push('-to', String(trimEnd));
+    }
+
+    args.push('-i', inputName);
+
+    const scaleFilter =
+      resolution !== 'original' ? `scale=-2:${resolution}:flags=lanczos` : '';
+
+    if (mode === 'webm-to-mp4') {
+      if (engineChoice === 'streamcopy' && !scaleFilter) {
+        args.push('-c', 'copy', '-movflags', '+faststart', outputName);
+        return args;
+      }
+      if (scaleFilter) args.push('-vf', scaleFilter);
+      args.push(
+        '-c:v',
+        'libx264',
+        '-preset',
+        'ultrafast',
+        '-crf',
+        crf,
+        '-pix_fmt',
+        'yuv420p',
+        '-c:a',
+        'aac',
+        '-b:a',
+        '128k',
+        '-movflags',
+        '+faststart',
+        outputName
+      );
+      return args;
+    }
+
+    if (mode === 'mp4-to-webm') {
+      if (scaleFilter) args.push('-vf', scaleFilter);
+      args.push('-c:v', 'libvpx', '-crf', crf, '-b:v', '1M', '-c:a', 'libvorbis', outputName);
+      return args;
+    }
+
+    if (mode === 'webm-to-mp3') {
+      args.push('-vn', '-c:a', 'libmp3lame', '-q:a', '2', outputName);
+      return args;
+    }
+
+    if (mode === 'webm-to-gif') {
+      const gifFilter =
+        resolution !== 'original'
+          ? `fps=12,scale=-1:${resolution}:flags=lanczos`
+          : 'fps=12,scale=480:-1:flags=lanczos';
+      args.push('-vf', gifFilter, '-loop', '0', outputName);
+      return args;
+    }
+
+    if (mode === 'webm-to-mov') {
+      if (scaleFilter) args.push('-vf', scaleFilter);
+      args.push(
+        '-c:v',
+        'libx264',
+        '-preset',
+        'ultrafast',
+        '-crf',
+        crf,
+        '-pix_fmt',
+        'yuv420p',
+        '-c:a',
+        'aac',
+        '-f',
+        'mov',
+        outputName
+      );
+      return args;
+    }
+
+    if (scaleFilter) args.push('-vf', scaleFilter);
+    args.push('-c:v', 'libvpx', '-crf', '30', '-b:v', '600k', '-c:a', 'libvorbis', outputName);
+    return args;
+  }
+
+  function getOutputConfig(mode: ConversionMode): { ext: string; mime: string } {
+    switch (mode) {
+      case 'webm-to-mp4':
+        return { ext: 'mp4', mime: 'video/mp4' };
+      case 'mp4-to-webm':
+      case 'compress-webm':
+        return { ext: 'webm', mime: 'video/webm' };
+      case 'webm-to-mp3':
+        return { ext: 'mp3', mime: 'audio/mpeg' };
+      case 'webm-to-gif':
+        return { ext: 'gif', mime: 'image/gif' };
+      case 'webm-to-mov':
+        return { ext: 'mov', mime: 'video/quicktime' };
+    }
+  }
+
+  startConversionBtn?.addEventListener('click', async () => {
+    if (fileQueue.length === 0) return;
+
+    const selectedRadio = document.querySelector<HTMLInputElement>('input[name="engineMode"]:checked');
+    const engineChoice = (selectedRadio?.value as 'universal' | 'streamcopy') || 'universal';
+    const resolution = (document.getElementById('setting-resolution') as HTMLSelectElement)?.value || 'original';
+    const crf = (document.getElementById('setting-crf') as HTMLSelectElement)?.value || '23';
+    const trimStart = parseFloat((document.getElementById('setting-trim-start') as HTMLInputElement)?.value || '0') || 0;
+    const trimEnd = parseFloat((document.getElementById('setting-trim-end') as HTMLInputElement)?.value || '0') || 0;
+
+    showStep(3);
+    setProgressUI(4);
+    if (progressSubstatus) progressSubstatus.textContent = i18n.loadingEngine;
+
+    startElapsedTimer();
+
+    try {
+      const { ffmpeg, fetchFile } = await ensureFFmpegLoaded();
+
+      convertedOutputs.forEach((o) => URL.revokeObjectURL(o.url));
+      convertedOutputs = [];
+
+      const { ext, mime } = getOutputConfig(currentMode);
+
+      for (let idx = 0; idx < fileQueue.length; idx++) {
+        const file = fileQueue[idx];
+        const safeInExt = file.name.split('.').pop() || 'webm';
+        const inputFileName = `input_${idx}.${safeInExt}`;
+        const outputFileName = `output_${idx}.${ext}`;
+
+        if (progressSubstatus) {
+          progressSubstatus.textContent =
+            engineChoice === 'streamcopy' ? i18n.remuxing : i18n.transcoding;
+        }
+
+        await ffmpeg.writeFile(inputFileName, await fetchFile(file));
+
+        const primaryArgs = buildFFmpegArgs(
+          inputFileName,
+          outputFileName,
+          currentMode,
+          engineChoice,
+          resolution,
+          crf,
+          trimStart,
+          trimEnd
+        );
+
+        let retCode = await ffmpeg.exec(primaryArgs);
+
+        if (retCode !== 0 && currentMode === 'webm-to-mp4' && engineChoice === 'streamcopy') {
+          const fallbackArgs = buildFFmpegArgs(
+            inputFileName,
+            outputFileName,
+            currentMode,
+            'universal',
+            resolution,
+            crf,
+            trimStart,
+            trimEnd
+          );
+          retCode = await ffmpeg.exec(fallbackArgs);
+        }
+
+        const outData = await ffmpeg.readFile(outputFileName);
+        const uint8 = outData instanceof Uint8Array ? outData : new TextEncoder().encode(String(outData));
+        const outBlob = new Blob([uint8.buffer as ArrayBuffer], { type: mime });
+        const outUrl = URL.createObjectURL(outBlob);
+
+        const baseName = file.name.replace(/\.[^/.]+$/, '');
+        convertedOutputs.push({
+          name: `${baseName}.${ext}`,
+          url: outUrl,
+          size: outBlob.size,
+          originalSize: file.size,
+          mime,
+        });
+
+        await ffmpeg.deleteFile(inputFileName).catch(() => {});
+        await ffmpeg.deleteFile(outputFileName).catch(() => {});
+      }
+
+      const elapsedFormatted = stopElapsedTimer();
+      setProgressUI(100);
+
+      renderResultsView(elapsedFormatted);
+      showStep(4);
+    } catch (error) {
+      stopElapsedTimer();
+      console.error('Conversion failed:', error);
+      alert('Conversion encountered an error. Please try Universal MP4 mode or another video file.');
+      showStep(2);
+    }
+  });
+
+  function renderResultsView(elapsedFormatted: string) {
+    if (convertedOutputs.length === 0) return;
+    const primary = convertedOutputs[0];
+
+    if (statOrigSize) statOrigSize.textContent = formatBytes(primary.originalSize);
+    if (statOutSize) statOutSize.textContent = formatBytes(primary.size);
+    if (statTimeTaken) statTimeTaken.textContent = elapsedFormatted;
+
+    if (videoPreview) {
+      videoPreview.pause();
+      videoPreview.classList.add('hidden');
+    }
+    if (audioPreview) {
+      audioPreview.pause();
+      audioPreview.classList.add('hidden');
+    }
+    if (gifPreview) {
+      gifPreview.classList.add('hidden');
+    }
+
+    if (primary.mime.startsWith('audio/')) {
+      if (audioPreview) {
+        audioPreview.src = primary.url;
+        audioPreview.classList.remove('hidden');
+      }
+    } else if (primary.mime === 'image/gif') {
+      if (gifPreview) {
+        gifPreview.src = primary.url;
+        gifPreview.classList.remove('hidden');
+      }
+    } else if (videoPreview) {
+      videoPreview.src = primary.url;
+      videoPreview.classList.remove('hidden');
+      videoPreview.load();
+    }
+
+    if (downloadPrimaryBtn) {
+      downloadPrimaryBtn.href = primary.url;
+      downloadPrimaryBtn.download = primary.name;
+    }
+    if (downloadPrimaryLabel) {
+      downloadPrimaryLabel.textContent =
+        currentMode === 'webm-to-mp4'
+          ? `${i18n.downloadMp4} (${primary.name})`
+          : `${i18n.downloadGeneric} (${primary.name})`;
+    }
+
+    if (batchResultsList) {
+      if (convertedOutputs.length > 1) {
+        batchResultsList.classList.remove('hidden');
+        batchResultsList.innerHTML = convertedOutputs
+          .map(
+            (item) => `
+          <div class="flex items-center justify-between gap-2 rounded-xl bg-theme-surface px-3.5 py-2.5 text-sm font-bold">
+            <span class="truncate text-theme-text">${item.name} (${formatBytes(item.size)})</span>
+            <a href="${item.url}" download="${item.name}" class="rounded-lg bg-[#2A835F] px-3 py-1.5 text-xs font-extrabold text-white hover:bg-[#12544F]">
+              Download
+            </a>
+          </div>
+        `
+          )
+          .join('');
+      } else {
+        batchResultsList.classList.add('hidden');
+        batchResultsList.innerHTML = '';
+      }
+    }
+  }
+
+  convertAnotherBtn?.addEventListener('click', () => {
+    if (videoPreview) {
+      videoPreview.pause();
+      videoPreview.removeAttribute('src');
+    }
+    if (audioPreview) {
+      audioPreview.pause();
+      audioPreview.removeAttribute('src');
+    }
+    fileQueue = [];
+    showStep(1);
+  });
+</script>

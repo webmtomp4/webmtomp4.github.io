@@ -1,0 +1,22 @@
+{
+  "name": "webmtomp4-github-io",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "WebMtoMP4 — Free WebM to MP4 Converter Online (100% Client-Side WebAssembly Video Engine)",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@astrojs/tailwind": "^6.0.0",
+    "@ffmpeg/core": "^0.12.6",
+    "@ffmpeg/ffmpeg": "^0.12.10",
+    "@ffmpeg/util": "^0.12.1",
+    "astro": "^5.4.0",
+    "tailwindcss": "^3.4.17"
+  }
+}

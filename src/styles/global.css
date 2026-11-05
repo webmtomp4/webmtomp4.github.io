@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Core Palette Tokens */
+  --deep-midnight-teal: #092328;
+  --rich-pine-teal: #12544F;
+  --vibrant-emerald-green: #2A835F;
+  --soft-sage-mint: #8BBB92;
+  --clean-mint-alabaster-light: #F4F9F5;
+
+  /* Light Mode Default Theme Tokens */
+  --bg-primary: #F4F9F5;
+  --bg-surface-card: #FFFFFF;
+  --workspace-box-bg: #FFFFFF;
+  --primary-action-button: #2A835F;
+  --primary-action-hover: #12544F;
+  --primary-action-text: #FFFFFF;
+  --secondary-accent-surface: #8BBB92;
+  --highlight-pill-badge: #E3F1E6;
+  --border-color: #8BBB92;
+  --text-primary: #092328;
+  --text-secondary: #12544F;
+  --dropzone-inner-tint: #F4F9F5;
+  --dropzone-hover-tint: #E3F1E6;
+}
+
+html.dark {
+  /* Dark Mode Theme Tokens */
+  --bg-primary: #092328;
+  --bg-surface-card: #0D3138;
+  --workspace-box-bg: #12544F;
+  --primary-action-button: #8BBB92;
+  --primary-action-hover: #2A835F;
+  --primary-action-text: #092328;
+  --secondary-accent-surface: #2A835F;
+  --highlight-pill-badge: #092328;
+  --border-color: #2A835F;
+  --text-primary: #F4F9F5;
+  --text-secondary: #8BBB92;
+  --dropzone-inner-tint: rgba(9, 35, 40, 0.55);
+  --dropzone-hover-tint: rgba(9, 35, 40, 0.8);
+}
+
+@layer base {
+  html {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 1.15rem;
+    line-height: 1.6;
+    transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-x: hidden;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+  }
+}
+
+/* Smooth Main Function Animations */
+.hero-first-fold {
+  min-height: calc(100dvh - 76px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dropzone-container {
+  border: 3px dashed #8BBB92;
+  background-color: var(--dropzone-inner-tint);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dropzone-container:hover,
+.dropzone-container.drag-active {
+  border-color: #2A835F;
+  background-color: var(--dropzone-hover-tint);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px -15px rgba(42, 131, 95, 0.22);
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+.floating-icon {
+  animation: floatGentle 3.6s ease-in-out infinite;
+}
+
+@keyframes progressGradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.progress-bar-fill {
+  background: linear-gradient(90deg, #2A835F 0%, #8BBB92 50%, #2A835F 100%);
+  background-size: 200% 100%;
+  animation: progressGradientFlow 2.2s ease infinite;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.step-transition {
+  animation: stepFadeSlideIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes stepFadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Support Developer CTA Button Glow */
+.btn-support-dev {
+  background-color: #2A835F;
+  color: #FFFFFF;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-support-dev:hover {
+  background-color: #12544F;
+  box-shadow: 0 0 20px rgba(18, 84, 79, 0.65), 0 6px 18px rgba(42, 131, 95, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Custom Scrollbar for Mode Selector Pills on smaller viewports */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

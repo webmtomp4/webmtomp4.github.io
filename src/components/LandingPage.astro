@@ -1,0 +1,280 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ConverterBox from './ConverterBox.astro';
+import { languages, useTranslations, getLocalizedPath, type Locale } from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<BaseLayout lang={lang}>
+  <!-- =================================================================== -->
+  <!-- FIRST FOLD (100dvh Above the Fold): Strictly Primary H1 + Converter -->
+  <!-- =================================================================== -->
+  <section
+    aria-labelledby="primary-hero-heading"
+    class="hero-first-fold mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6"
+  >
+    <div class="text-center mb-4 sm:mb-6">
+      <h1
+        id="primary-hero-heading"
+        class="text-theme-text font-extrabold tracking-tight mx-auto max-w-4xl"
+      >
+        {t('hero.h1')}
+      </h1>
+    </div>
+
+    <ConverterBox lang={lang} />
+  </section>
+
+  <!-- =================================================================== -->
+  <!-- BELOW THE FOLD: Breadcrumbs, HowTo, WebM vs MP4, SEO Guides & FAQs  -->
+  <!-- =================================================================== -->
+  <div
+    id="video-converters"
+    class="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 py-14 space-y-16 border-t border-theme-border/30"
+  >
+    <!-- 1. Visual Breadcrumbs (Mapped 1:1 to BreadcrumbList JSON-LD) -->
+    <nav aria-label="Breadcrumb" class="text-sm font-bold text-theme-textSecondary">
+      <ol class="flex flex-wrap items-center gap-2">
+        <li>
+          <a href={getLocalizedPath(lang)} class="hover:text-[#2A835F] transition">
+            {t('breadcrumb.home')}
+          </a>
+        </li>
+        <li aria-hidden="true">/</li>
+        <li>
+          <a href="#video-converters" class="hover:text-[#2A835F] transition">
+            {t('breadcrumb.tools')}
+          </a>
+        </li>
+        <li aria-hidden="true">/</li>
+        <li class="text-theme-text" aria-current="page">
+          {t('breadcrumb.current')}
+        </li>
+      </ol>
+    </nav>
+
+    <!-- 2. HowTo Section: How to Convert WebM to MP4 Online Free -->
+    <section id="how-to-convert-webm-to-mp4" aria-labelledby="howto-heading" class="space-y-6">
+      <div class="text-center max-w-3xl mx-auto space-y-2">
+        <h2 id="howto-heading" class="text-2xl sm:text-3xl font-extrabold text-theme-text">
+          {t('howto.title')}
+        </h2>
+        <p class="text-base sm:text-lg text-theme-textSecondary">
+          {t('howto.subtitle')}
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <article class="rounded-3xl border border-theme-border/60 bg-theme-surface p-6 shadow-sm">
+          <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2A835F] text-white font-extrabold text-lg">
+            1
+          </div>
+          <h3 class="text-lg font-extrabold text-theme-text mb-2">{t('howto.step1Title')}</h3>
+          <p class="text-sm sm:text-base text-theme-textSecondary leading-relaxed">{t('howto.step1Text')}</p>
+        </article>
+
+        <article class="rounded-3xl border border-theme-border/60 bg-theme-surface p-6 shadow-sm">
+          <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2A835F] text-white font-extrabold text-lg">
+            2
+          </div>
+          <h3 class="text-lg font-extrabold text-theme-text mb-2">{t('howto.step2Title')}</h3>
+          <p class="text-sm sm:text-base text-theme-textSecondary leading-relaxed">{t('howto.step2Text')}</p>
+        </article>
+
+        <article class="rounded-3xl border border-theme-border/60 bg-theme-surface p-6 shadow-sm">
+          <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2A835F] text-white font-extrabold text-lg">
+            3
+          </div>
+          <h3 class="text-lg font-extrabold text-theme-text mb-2">{t('howto.step3Title')}</h3>
+          <p class="text-sm sm:text-base text-theme-textSecondary leading-relaxed">{t('howto.step3Text')}</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 3. WebM vs MP4 Technical Comparison Table -->
+    <section id="webm-vs-mp4" aria-labelledby="webm-vs-mp4-heading" class="space-y-6">
+      <div class="text-center max-w-3xl mx-auto space-y-2">
+        <h2 id="webm-vs-mp4-heading" class="text-2xl sm:text-3xl font-extrabold text-theme-text">
+          {t('vs.title')}
+        </h2>
+        <p class="text-base sm:text-lg text-theme-textSecondary">
+          {t('vs.subtitle')}
+        </p>
+      </div>
+
+      <div class="overflow-x-auto rounded-3xl border border-theme-border bg-theme-surface shadow-md">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-theme-border/40 bg-theme-pill text-theme-text">
+              <th class="p-4 sm:p-5 text-sm sm:text-base font-extrabold">{t('vs.colAttribute')}</th>
+              <th class="p-4 sm:p-5 text-sm sm:text-base font-bold text-theme-textSecondary">
+                {t('vs.colWebm')}
+              </th>
+              <th class="p-4 sm:p-5 text-sm sm:text-base font-extrabold text-[#2A835F] dark:text-[#8BBB92]">
+                {t('vs.colMp4')}
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-theme-border/30 text-sm sm:text-base">
+            <tr>
+              <td class="p-4 sm:p-5 font-bold text-theme-text">{t('vs.row1Attr')}</td>
+              <td class="p-4 sm:p-5 text-theme-textSecondary">{t('vs.row1Webm')}</td>
+              <td class="p-4 sm:p-5 font-bold text-[#2A835F] dark:text-[#8BBB92]">{t('vs.row1Mp4')}</td>
+            </tr>
+            <tr>
+              <td class="p-4 sm:p-5 font-bold text-theme-text">{t('vs.row2Attr')}</td>
+              <td class="p-4 sm:p-5 text-theme-textSecondary">{t('vs.row2Webm')}</td>
+              <td class="p-4 sm:p-5 font-bold text-[#2A835F] dark:text-[#8BBB92]">{t('vs.row2Mp4')}</td>
+            </tr>
+            <tr>
+              <td class="p-4 sm:p-5 font-bold text-theme-text">{t('vs.row3Attr')}</td>
+              <td class="p-4 sm:p-5 text-theme-textSecondary">{t('vs.row3Webm')}</td>
+              <td class="p-4 sm:p-5 font-bold text-[#2A835F] dark:text-[#8BBB92]">{t('vs.row3Mp4')}</td>
+            </tr>
+            <tr>
+              <td class="p-4 sm:p-5 font-bold text-theme-text">{t('vs.row4Attr')}</td>
+              <td class="p-4 sm:p-5 text-theme-textSecondary">{t('vs.row4Webm')}</td>
+              <td class="p-4 sm:p-5 font-bold text-[#2A835F] dark:text-[#8BBB92]">{t('vs.row4Mp4')}</td>
+            </tr>
+            <tr>
+              <td class="p-4 sm:p-5 font-bold text-theme-text">{t('vs.row5Attr')}</td>
+              <td class="p-4 sm:p-5 text-theme-textSecondary">{t('vs.row5Webm')}</td>
+              <td class="p-4 sm:p-5 font-bold text-[#2A835F] dark:text-[#8BBB92]">{t('vs.row5Mp4')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. Keyword-Rich Semantic SEO Guides (What is WebM + FFmpeg WebM to MP4) -->
+    <section id="what-is-webm-guide" aria-labelledby="seo-guide-heading" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <article class="rounded-3xl border border-theme-border/60 bg-theme-surface p-6 sm:p-8 shadow-sm space-y-3">
+        <h2 id="seo-guide-heading" class="text-xl sm:text-2xl font-extrabold text-theme-text">
+          {t('seoGuide.whatIsWebmTitle')}
+        </h2>
+        <p class="text-sm sm:text-base text-theme-textSecondary leading-relaxed">
+          {t('seoGuide.whatIsWebmP1')}
+        </p>
+        <p class="text-sm sm:text-base text-theme-textSecondary leading-relaxed">
+          {t('seoGuide.whatIsWebmP2')}
+        </p>
+      </article>
+
+      <article class="rounded-3xl border border-theme-border/60 bg-theme-surface p-6 sm:p-8 shadow-sm space-y-3 flex flex-col justify-between">
+        <div class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-theme-text">
+            {t('seoGuide.ffmpegTitle')}
+          </h2>
+          <p class="text-sm sm:text-base text-theme-textSecondary leading-relaxed">
+            {t('seoGuide.ffmpegP1')}
+          </p>
+        </div>
+        <div class="rounded-2xl bg-theme-pill p-4 border border-theme-border/40 font-mono text-xs sm:text-sm text-theme-text">
+          <code>ffmpeg -i input.webm -c:v libx264 -pix_fmt yuv420p -c:a aac -movflags +faststart output.mp4</code>
+        </div>
+      </article>
+    </section>
+
+    <!-- 5. Local Browser WASM vs Cloud Converters Comparison Table -->
+    <section aria-labelledby="comparison-heading" class="space-y-6">
+      <h2 id="comparison-heading" class="text-2xl sm:text-3xl font-extrabold text-theme-text text-center">
+        {t('table.title')}
+      </h2>
+      <div class="overflow-x-auto rounded-3xl border border-theme-border bg-theme-surface shadow-md">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-theme-border/40 bg-theme-pill text-theme-text">
+              <th class="p-4 sm:p-5 text-sm sm:text-base font-extrabold">{t('table.feature')}</th>
+              <th class="p-4 sm:p-5 text-sm sm:text-base font-extrabold text-[#2A835F] dark:text-[#8BBB92]">
+                {t('table.ourTool')}
+              </th>
+              <th class="p-4 sm:p-5 text-sm sm:text-base font-bold text-theme-textSecondary">
+                {t('table.cloudTools')}
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-theme-border/30 text-sm sm:text-base">
+            <tr>
+              <td class="p-4 sm:p-5 font-bold text-theme-text">{t('table.row1Name')}</td>
+              <td class="p-4 sm:p-5 font-bold text-[#2A835F] dark:text-[#8BBB92]">{t('table.row1Ours')}</td>
+              <td class="p-4 sm:p-5 text-theme-textSecondary">{t('table.row1Cloud')}</td>
+            </tr>
+            <tr>
+              <td class="p-4 sm:p-5 font-bold text-theme-text">{t('table.row2Name')}</td>
+              <td class="p-4 sm:p-5 font-bold text-[#2A835F] dark:text-[#8BBB92]">{t('table.row2Ours')}</td>
+              <td class="p-4 sm:p-5 text-theme-textSecondary">{t('table.row2Cloud')}</td>
+            </tr>
+            <tr>
+              <td class="p-4 sm:p-5 font-bold text-theme-text">{t('table.row3Name')}</td>
+              <td class="p-4 sm:p-5 font-bold text-[#2A835F] dark:text-[#8BBB92]">{t('table.row3Ours')}</td>
+              <td class="p-4 sm:p-5 text-theme-textSecondary">{t('table.row3Cloud')}</td>
+            </tr>
+            <tr>
+              <td class="p-4 sm:p-5 font-bold text-theme-text">{t('table.row4Name')}</td>
+              <td class="p-4 sm:p-5 font-bold text-[#2A835F] dark:text-[#8BBB92]">{t('table.row4Ours')}</td>
+              <td class="p-4 sm:p-5 text-theme-textSecondary">{t('table.row4Cloud')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 6. SEO FAQ Section (Mapped 1:1 to FAQPage JSON-LD) -->
+    <section id="faq" aria-labelledby="faq-heading" class="space-y-6">
+      <h2 id="faq-heading" class="text-2xl sm:text-3xl font-extrabold text-theme-text text-center">
+        {t('faq.title')}
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <article class="rounded-2xl border border-theme-border/60 bg-theme-surface p-6 shadow-sm">
+          <h3 class="text-lg font-extrabold text-theme-text mb-2">{t('faq.q1')}</h3>
+          <p class="text-sm sm:text-base text-theme-textSecondary leading-relaxed">{t('faq.a1')}</p>
+        </article>
+        <article class="rounded-2xl border border-theme-border/60 bg-theme-surface p-6 shadow-sm">
+          <h3 class="text-lg font-extrabold text-theme-text mb-2">{t('faq.q2')}</h3>
+          <p class="text-sm sm:text-base text-theme-textSecondary leading-relaxed">{t('faq.a2')}</p>
+        </article>
+        <article class="rounded-2xl border border-theme-border/60 bg-theme-surface p-6 shadow-sm">
+          <h3 class="text-lg font-extrabold text-theme-text mb-2">{t('faq.q3')}</h3>
+          <p class="text-sm sm:text-base text-theme-textSecondary leading-relaxed">{t('faq.a3')}</p>
+        </article>
+        <article class="rounded-2xl border border-theme-border/60 bg-theme-surface p-6 shadow-sm">
+          <h3 class="text-lg font-extrabold text-theme-text mb-2">{t('faq.q4')}</h3>
+          <p class="text-sm sm:text-base text-theme-textSecondary leading-relaxed">{t('faq.a4')}</p>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <!-- Minimal Footer -->
+  <footer class="border-t border-theme-border/30 bg-theme-surface py-8 px-4">
+    <div class="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4 text-sm font-semibold text-theme-textSecondary">
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        <span class="font-extrabold text-theme-text">WebMtoMP4.github.io</span>
+        <span>•</span>
+        <span>{t('hero.privacyBadge')}</span>
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        {
+          Object.entries(languages).map(([code, info]) => (
+            <a
+              href={getLocalizedPath(code as Locale)}
+              aria-label={info.name}
+              class:list={[
+                'text-xs font-bold uppercase px-2.5 py-1 rounded-lg transition',
+                code === lang ? 'bg-[#2A835F] text-white' : 'hover:bg-theme-pill text-theme-textSecondary',
+              ]}
+            >
+              {info.code}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </footer>
+</BaseLayout>

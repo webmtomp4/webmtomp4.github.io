@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#092328"/>
+  <rect x="36" y="36" width="1128" height="558" rx="36" fill="url(#bgGrad)" stroke="#8BBB92" stroke-width="3"/>
+  <rect x="96" y="110" width="380" height="52" rx="26" fill="#092328" stroke="#8BBB92" stroke-width="1.5"/>
+  <circle cx="126" cy="136" r="8" fill="#8BBB92"/>
+  <text x="148" y="143" fill="#F4F9F5" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700">100% LOCAL BROWSER RAM</text>
+  <text x="96" y="255" fill="#F4F9F5" font-family="system-ui, -apple-system, sans-serif" font-size="68" font-weight="800">Free WebM to MP4</text>
+  <text x="96" y="340" fill="#8BBB92" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="800">Converter Online</text>
+  <text x="96" y="420" fill="#F4F9F5" opacity="0.9" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="600">Instant H.264 + AAC MP4 • Zero Cloud Uploads • Plays on iPhone, Mac &amp; PC</text>
+  <rect x="96" y="470" width="310" height="68" rx="18" fill="#2A835F" stroke="#8BBB92" stroke-width="2"/>
+  <text x="140" y="514" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="800">webmtomp4.github.io</text>
+  <defs>
+    <linearGradient id="bgGrad" x1="36" y1="36" x2="1164" y2="594" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#092328"/>
+      <stop offset="0.6" stop-color="#12544F"/>
+      <stop offset="1" stop-color="#2A835F"/>
+    </linearGradient>
+  </defs>
+</svg>

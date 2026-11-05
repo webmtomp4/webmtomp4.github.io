@@ -1,0 +1,137 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import SchemaJsonLd from '../components/SchemaJsonLd.astro';
+import {
+  languages,
+  locales,
+  TARGET_META_KEYWORDS,
+  useTranslations,
+  getLocalizedPath,
+  type Locale,
+} from '../i18n/ui';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const siteOrigin = 'https://webmtomp4.github.io';
+const rawPath = getLocalizedPath(lang);
+const normalizedPath = rawPath.endsWith('/') ? rawPath : `${rawPath}/`;
+const canonicalUrl = `${siteOrigin}${normalizedPath}`;
+const ogImageUrl = `${siteOrigin}/og-image.svg`;
+const currentOgLocale = languages[lang].ogLocale;
+const alternateOgLocales = locales
+  .filter((loc) => loc !== lang)
+  .map((loc) => languages[loc].ogLocale);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <!-- Google Tag Manager (GTM-KB23HDHK) & Google Analytics 4 (G-F7L9QCNXPD) -->
+    <script is:inline async src="https://www.googletagmanager.com/gtm.js?id=GTM-KB23HDHK"></script>
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-F7L9QCNXPD"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-F7L9QCNXPD');
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{t('meta.title')}</title>
+    <meta name="description" content={t('meta.description')} />
+    <meta name="keywords" content={TARGET_META_KEYWORDS} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+    <!-- Self-Referencing Canonical URL -->
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Explicit Sitemap Discovery Link -->
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://webmtomp4.github.io/sitemap.xml" />
+
+    <!-- Complete 8-Language Hreflang Network + x-default -->
+    {
+      locales.map((loc) => {
+        const locPath = getLocalizedPath(loc);
+        const locHref = `${siteOrigin}${locPath.endsWith('/') ? locPath : `${locPath}/`}`;
+        return <link rel="alternate" hreflang={loc} href={locHref} />;
+      })
+    }
+    <link rel="alternate" hreflang="x-default" href={`${siteOrigin}/`} />
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={t('meta.title')} />
+    <meta property="og:description" content={t('meta.description')} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:site_name" content="WebMtoMP4" />
+    <meta property="og:locale" content={currentOgLocale} />
+    {
+      alternateOgLocales.map((altLocale) => (
+        <meta property="og:locale:alternate" content={altLocale} />
+      ))
+    }
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={t('meta.title')} />
+    <meta name="twitter:description" content={t('meta.description')} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- Favicon & PWA Manifest -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2A835F" />
+
+    <!-- Non-Render-Blocking Typography for 100/100 Lighthouse Score -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+
+    <!-- Strict Zero-Fake-Rating JSON-LD Structured Data (WebApplication, HowTo, FAQPage, BreadcrumbList) -->
+    <SchemaJsonLd lang={lang} />
+
+    <!-- Anti-FOUC Theme Initialization (Light Mode Default #F4F9F5) -->
+    <script is:inline>
+      (function () {
+        try {
+          const saved = localStorage.getItem('webmtomp4-theme');
+          if (saved === 'dark') {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen flex flex-col bg-theme-bg text-theme-text antialiased selection:bg-[#2A835F] selection:text-white">
+    <Header lang={lang} />
+    <main class="flex-1">
+      <slot />
+    </main>
+  </body>
+</html>
