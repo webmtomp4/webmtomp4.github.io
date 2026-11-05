@@ -50,22 +50,26 @@ html.dark {
     font-family: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    font-size: 1.15rem;
+    font-size: 1.05rem;
     line-height: 1.6;
     transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 100%;
     overflow-x: hidden;
   }
 
   h1 {
-    font-size: clamp(2rem, 4vw, 3.25rem);
-    line-height: 1.12;
+    font-size: clamp(1.75rem, 4vw, 3.25rem);
+    line-height: 1.15;
     letter-spacing: -0.025em;
     font-weight: 800;
+    overflow-wrap: break-word;
   }
 }
 
